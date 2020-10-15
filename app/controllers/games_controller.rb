@@ -4,16 +4,13 @@ class GamesController < ApplicationController
   VOWELS = %w(a e i o u y)
 
   def new
-    # Generate grid with 5 vowels and 5 consonants, the same letter can be there multiple times
+    # Generate grid with 5 vowels and 5 consonants, the same letter can be picked multiple times
     @grid = Array.new(5) { VOWELS.sample }
     @grid += Array.new(5) { (('a'..'z').to_a - VOWELS).sample }
     @grid.shuffle!
   end
 
   def score
-    # Initialize session with 0 points if no score
-    session[:score] = 0 unless session[:score]
-
     @attempt = params[:attempt].downcase.split(//)
     @grid = params[:grid].split(' ')
 
@@ -40,6 +37,10 @@ class GamesController < ApplicationController
   end
 
   def update_score(valid_english_word, letters_included, attempt)
+    # Initialize session with 0 points if no score
+    session[:score] = 0 unless session[:score]
+
+    # Score 0 points if the attempt is not valid, or score as many points as the attempt length
     score = valid_english_word && letters_included ? attempt.length : 0
     session[:score] += score
     return score
